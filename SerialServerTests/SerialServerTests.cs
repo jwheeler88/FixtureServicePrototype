@@ -76,10 +76,7 @@ public class Message
 {
     public string Header { get; set; }
 
-    public bool IsEmpty
-    {
-        get => string.IsNullOrEmpty(Header);
-    }
+    public bool IsEmpty => string.IsNullOrEmpty(Header);
 }
 
 public class SerialServer
