@@ -47,6 +47,24 @@ public class FooTests
         // Assert
         Mock.Get(translator).Verify(t => t.Translate(bytes));
     }
+
+    [Test]
+    public void ReadReturnsAnEmptyMessageWhenNoDataReceived()
+    {
+        //Arrange
+        var bytes = Enumerable.Empty<byte>().ToArray();
+
+        ITranslate translator = Mock.Of<ITranslate>(t =>
+            t.Translate(bytes) == string.Empty);
+        
+        var sut = new SerialServer(translator);
+        
+        //Act
+        Message message = sut.Read(bytes);
+
+        //Assert
+        Assert.IsTrue(message.IsEmpty);
+    }
 }
 
 public interface ITranslate
@@ -57,6 +75,11 @@ public interface ITranslate
 public class Message
 {
     public string Header { get; set; }
+
+    public bool IsEmpty
+    {
+        get => string.IsNullOrEmpty(Header);
+    }
 }
 
 public class SerialServer
