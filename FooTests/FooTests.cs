@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Text;
+using Moq;
 using NUnit.Framework;
 
 namespace Tests
@@ -12,28 +14,40 @@ namespace Tests
         }
 
         [Test]
-        public void ReadReturnsMessageWithMatchingHeaderAsInitialData()
+        public void ReadReturnsMessageWithMatchingHeaderAsInitialDataReceived()
         {
             // Arrange
-            ITranslate msgTranslator = new SerialTranslator();
-            var sut = new SerialServer(msgTranslator);
-            
             var data = "Hello, world!";
             byte[] bytes = Encoding.ASCII.GetBytes(data);
+
+            ITranslate translator = Mock.Of<ITranslate>(t =>
+                t.Translate(bytes) == data);
+
+            var sut = new SerialServer(translator);
             
             // Act
             Message message = sut.Read(bytes);
 
             // Assert
-            Assert.AreEqual(message.Header, data);
+            Assert.AreEqual(data, message.Header);
         }
-    }
 
-    public class SerialTranslator : ITranslate
-    {
-        public string Translate(byte[] bytes)
+        [Test]
+        public void ReadSuccessfullyCallsInternalSerialPortStreamReadMethod()
         {
-            return Encoding.ASCII.GetString(bytes);
+            // Arrange
+            byte[] bytes = Enumerable.Empty<byte>().ToArray();
+            
+            ITranslate translator = Mock.Of<ITranslate>(t =>
+                t.Translate(bytes) == string.Empty);
+            
+            var sut = new SerialServer(translator);
+            
+            // Act
+            Message message = sut.Read(bytes);
+
+            // Assert
+            Mock.Get(translator).Verify(t => t.Translate(bytes));
         }
     }
 
