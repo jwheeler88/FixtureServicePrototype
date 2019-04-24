@@ -3,7 +3,6 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 
-//TODO: create a wrapper/simple adapter around nuget SerialPortStream
 public class SerialServerTests
 {
     [SetUp]
