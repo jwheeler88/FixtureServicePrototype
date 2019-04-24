@@ -74,7 +74,9 @@ public interface ITranslate
 
 public class Message
 {
-    public string Header { get; set; }
+    public string Header { get; }
+    
+    public Message(string header) => Header = header;
 
     public bool IsEmpty => string.IsNullOrEmpty(Header);
 }
@@ -90,8 +92,8 @@ public class SerialServer
 
     public Message Read(byte[] bytes)
     {
-        var msg = new Message();
-        msg.Header = _translator.Translate(bytes);
+        string header = _translator.Translate(bytes);
+        var msg = new Message(header);
             
         return msg;
     }
