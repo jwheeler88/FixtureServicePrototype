@@ -15,8 +15,8 @@ namespace Tests
         public void ReadReturnsMessageWithMatchingHeaderAsInitialData()
         {
             // Arrange
-            ITranslate msgTranslator = new MessageTranslator();
-            var sut = new Foo(msgTranslator);
+            ITranslate msgTranslator = new SerialTranslator();
+            var sut = new SerialServer(msgTranslator);
             
             var data = "Hello, world!";
             byte[] bytes = Encoding.ASCII.GetBytes(data);
@@ -29,7 +29,7 @@ namespace Tests
         }
     }
 
-    public class MessageTranslator : ITranslate
+    public class SerialTranslator : ITranslate
     {
         public string Translate(byte[] bytes)
         {
@@ -47,11 +47,11 @@ namespace Tests
         public string Header { get; set; }
     }
 
-    public class Foo
+    public class SerialServer
     {
         private readonly ITranslate _translator;
 
-        public Foo(ITranslate translator)
+        public SerialServer(ITranslate translator)
         {
             _translator = translator;
         }
