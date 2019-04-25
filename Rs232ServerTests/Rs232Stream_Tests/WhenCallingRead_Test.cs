@@ -1,6 +1,6 @@
-using System.Text;
 using Moq;
 using NUnit.Framework;
+using RJCP.IO.Ports;
 
 [Category("RS232Server")]
 public class WhenCallingRead
@@ -11,29 +11,38 @@ public class WhenCallingRead
     }
 
     [Test]
-    public void ReturnsMessageWithMatchingHeaderAsInitialDataReceived()
+    public void ReturnsMessageWithCorrectHeader()
     {
         // Arrange
-        var data = "Hello, world!";
-        byte[] bytes = Encoding.ASCII.GetBytes(data);
+        var msg = "Hello, world!";
+        
+        var bufferSize = 256;
+        var buffer = new byte[bufferSize];
 
-        ITranslate translator = Mock.Of<ITranslate>(t =>
-            t.Translate(bytes) == data);
-
-        var sut = new Rs232Stream(translator);
+        var mockSerialPort = new Mock<ISerialPortStream>(MockBehavior.Strict);
+        mockSerialPort
+            .Setup(sp => sp.Read(buffer, 0, buffer.Length))
+            .Returns(It.IsAny<int>());
             
+        var mockTranslator = new Mock<ITranslate>();
+        mockTranslator.Setup(t => t.Translate(buffer)).Returns(msg);
+
+        var sut = new Rs232Stream(mockTranslator.Object, mockSerialPort.Object)
+        {
+            BufferSize = bufferSize
+        };
+
         // Act
-        Message message = sut.Read(bytes);
+        Message message = sut.Read();
 
         // Assert
-        Assert.AreEqual(data, message.Header);
+        Assert.AreEqual(msg, message.Header);
     }
 }
 
 public interface ITranslate
 {
-    string Translate(byte[] bytes);
-    byte[] Translate(string messageHeader);
+    string Translate(byte[] data);
 }
 
 public class Message
@@ -41,29 +50,29 @@ public class Message
     public string Header { get; }
     
     public Message(string header) => Header = header;
-
-    public bool IsEmpty => string.IsNullOrEmpty(Header);
 }
 
 public class Rs232Stream
 {
     private readonly ITranslate _translator;
+    private readonly ISerialPortStream _serialPort;
 
-    public Rs232Stream(ITranslate translator)
+    public int BufferSize { get; set; }
+
+    public Rs232Stream(ITranslate translator, ISerialPortStream serialPort)
     {
         _translator = translator;
+        _serialPort = serialPort;
     }
 
-    public Message Read(byte[] bytes)
+    public Message Read()
     {
-        string header = _translator.Translate(bytes);
+        var buffer = new byte[BufferSize];
+        _serialPort.Read(buffer, 0, buffer.Length);
+
+        string header = _translator.Translate(buffer);
         var msg = new Message(header);
             
         return msg;
-    }
-
-    public void Write(Message message)
-    {
-        _translator.Translate(message.Header);
     }
 }
