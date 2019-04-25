@@ -64,11 +64,31 @@ public class SerialServerTests
         //Assert
         Assert.IsTrue(message.IsEmpty);
     }
+
+    [Test]
+    public void WriteSuccessfullyCallsInternalSerialPortStreamWriteMethod()
+    {
+        //Arrange
+        var data = "Hello, world!";
+        Message message = new Message(data);
+
+        ITranslate translator = Mock.Of<ITranslate>(t =>
+            t.Translate(message.Header) == new byte[] {});
+            
+        var sut = new SerialServer(translator);
+
+        //Act
+        sut.Write(message);
+        
+        //Assert
+        Mock.Get(translator).Verify(t => t.Translate(message.Header));
+    }
 }
 
 public interface ITranslate
 {
     string Translate(byte[] bytes);
+    byte[] Translate(string messageHeader);
 }
 
 public class Message
@@ -95,5 +115,10 @@ public class SerialServer
         var msg = new Message(header);
             
         return msg;
+    }
+
+    public void Write(Message message)
+    {
+        _translator.Translate(message.Header);
     }
 }
