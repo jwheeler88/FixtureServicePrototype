@@ -5,7 +5,7 @@
 
         <IsPackable>false</IsPackable>
 
-        <RootNamespace>FooTests</RootNamespace>
+        <RootNamespace></RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

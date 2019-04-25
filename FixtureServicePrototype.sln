@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixtureService.ConsoleApp", "FixtureService.ConsoleApp\FixtureService.ConsoleApp.csproj", "{A4290EBD-39EC-45B5-9C27-E0AD00138C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialServerTests", "SerialServerTests\SerialServerTests.csproj", "{118A8730-EB57-4F04-BAF7-7122466DDFA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rs232ServerTests", "Rs232ServerTests\Rs232ServerTests.csproj", "{118A8730-EB57-4F04-BAF7-7122466DDFA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
