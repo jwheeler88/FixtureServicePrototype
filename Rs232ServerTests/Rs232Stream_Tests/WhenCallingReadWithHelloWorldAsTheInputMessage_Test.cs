@@ -3,8 +3,8 @@ using Moq;
 using NUnit.Framework;
 using RJCP.IO.Ports;
 
-[Category("RS232Server")]
-public class WhenCallingRead
+[Category("Rs232Stream")]
+public class WhenCallingReadWithHelloWorldAsTheInputMessage
 {
     [SetUp]
     public void Setup()
